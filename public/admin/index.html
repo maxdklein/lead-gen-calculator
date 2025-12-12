@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leads Dashboard | Lead Gen Calculator</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <h1>LEA</h1>
+      <span class="header-subtitle">Lead Gen Dashboard</span>
+    </div>
+    <button class="btn-logout" id="logout-btn">Logout</button>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Stats Cards -->
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Leads</div>
+        <div class="stat-value" id="stat-total">-</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-label">New Leads</div>
+        <div class="stat-value" id="stat-new">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">This Week</div>
+        <div class="stat-value" id="stat-week">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">This Month</div>
+        <div class="stat-value" id="stat-month">-</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar">
+      <div class="filters-left">
+        <select id="filter-status">
+          <option value="">All Statuses</option>
+          <option value="new">New</option>
+          <option value="contacted">Contacted</option>
+          <option value="qualified">Qualified</option>
+          <option value="converted">Converted</option>
+          <option value="disqualified">Disqualified</option>
+        </select>
+
+        <select id="filter-company-type">
+          <option value="">All Company Types</option>
+          <option value="wealth_management">Wealth Management</option>
+          <option value="private_markets_platform">Private Markets Platform</option>
+          <option value="point_solutions_b2b">Point Solutions / B2B</option>
+        </select>
+
+        <select id="filter-use-case">
+          <option value="">All Use Cases</option>
+          <option value="critical_business_process">Critical Business Process</option>
+          <option value="m_and_a_transitions">M&A Transitions</option>
+          <option value="prospects_onboarding">Prospects & Onboarding</option>
+          <option value="new_investor_onboarding">New Investor Onboarding</option>
+        </select>
+
+        <input type="text" id="filter-search" placeholder="Search email or company...">
+      </div>
+
+      <div class="filters-right">
+        <button class="btn-secondary" id="export-btn">Export CSV</button>
+      </div>
+    </div>
+
+    <!-- Leads Table -->
+    <div class="table-container">
+      <table class="leads-table">
+        <thead>
+          <tr>
+            <th class="sortable" data-sort="created_at">Date</th>
+            <th class="sortable" data-sort="email">Email</th>
+            <th>Company</th>
+            <th>Company Type</th>
+            <th>Use Case</th>
+            <th class="sortable" data-sort="annual_savings">Annual Savings</th>
+            <th class="sortable" data-sort="status">Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="leads-tbody">
+          <tr>
+            <td colspan="8" class="loading">Loading leads...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="pagination">
+      <button class="btn-page" id="prev-page" disabled>Previous</button>
+      <span class="page-info" id="page-info">Page 1 of 1</span>
+      <button class="btn-page" id="next-page" disabled>Next</button>
+    </div>
+  </main>
+
+  <!-- Lead Detail Modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="lead-modal">
+      <div class="modal-header">
+        <h2>Lead Details</h2>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Populated dynamically -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="modal-cancel">Close</button>
+        <button class="btn-primary" id="modal-save">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | Lead Gen Calculator</title>
+  <style>
+    :root {
+      --lea-navy: #08016A;
+      --lea-teal: #0088BB;
+      --text-secondary: #4a5568;
+      --border-color: #e2e8f0;
+      --error-red: #c53030;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, var(--lea-navy) 0%, #1a1380 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-container {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .logo h1 {
+      font-size: 2rem;
+      color: var(--lea-navy);
+    }
+
+    .logo p {
+      color: var(--text-secondary);
+      margin-top: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: var(--lea-navy);
+      margin-bottom: 8px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--lea-teal);
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      background: var(--lea-teal);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-login:hover {
+      background: #006991;
+    }
+
+    .btn-login:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .error-message {
+      background: #fff5f5;
+      color: var(--error-red);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="logo">
+      <h1>LEA</h1>
+      <p>Lead Gen Admin</p>
+    </div>
+
+    <div class="error-message" id="error-message"></div>
+
+    <form id="login-form">
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required autofocus>
+      </div>
+
+      <button type="submit" class="btn-login" id="login-btn">Login</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const password = document.getElementById('password').value;
+      const loginBtn = document.getElementById('login-btn');
+      const errorMsg = document.getElementById('error-message');
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Logging in...';
+      errorMsg.style.display = 'none';
+
+      try {
+        const response = await fetch('/api/admin/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          window.location.href = '/admin';
+        } else {
+          errorMsg.textContent = data.error || 'Invalid password';
+          errorMsg.style.display = 'block';
+        }
+      } catch (error) {
+        errorMsg.textContent = 'Login failed. Please try again.';
+        errorMsg.style.display = 'block';
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Login';
+      }
+    });
+  </script>
+</body>
+</html>
