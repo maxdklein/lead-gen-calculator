@@ -659,6 +659,62 @@ body {
   text-decoration: underline;
 }
 
+/* Adjust Section */
+.adjust-section {
+  background: var(--bg-gray);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 30px;
+}
+
+.adjust-section h3 {
+  color: var(--lea-navy);
+  font-size: 1rem;
+  margin-bottom: 16px;
+}
+
+.adjust-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.adjust-row label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  min-width: 200px;
+}
+
+.input-with-prefix.compact {
+  max-width: 150px;
+}
+
+.input-with-prefix.compact input {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+}
+
+.input-with-prefix.compact .prefix {
+  padding: 8px 10px;
+}
+
+.btn-recalc {
+  background: var(--lea-navy);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-recalc:hover {
+  background: var(--lea-navy-light);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .header-title {

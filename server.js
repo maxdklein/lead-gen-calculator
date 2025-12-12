@@ -104,8 +104,20 @@ app.post('/api/calculate', async (req, res) => {
       return res.status(400).json({ error: 'Use case is required' });
     }
 
-    // Get ROI defaults
-    const roiDefaults = await roiDefaultsQueries.get();
+    // Get ROI defaults (with fallback if not seeded)
+    let roiDefaults = await roiDefaultsQueries.get();
+    if (!roiDefaults) {
+      roiDefaults = {
+        triage_time_per_doc: 5,
+        data_entry_time_per_doc: 15,
+        analyst_hourly_rate: 50,
+        backfill_hourly_rate: 150,
+        docs_per_household: 10,
+        docs_per_client: 10,
+        docs_per_investor: 5,
+        default_fte_cost: 85000
+      };
+    }
 
     // Prepare inputs for calculation
     const inputs = {

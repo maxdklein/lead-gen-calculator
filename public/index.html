@@ -34,14 +34,10 @@
         </div>
         <div class="step" data-step="3">
           <div class="step-number">3</div>
-          <div class="step-label">Model</div>
+          <div class="step-label">Volume</div>
         </div>
         <div class="step" data-step="4">
           <div class="step-number">4</div>
-          <div class="step-label">Inputs</div>
-        </div>
-        <div class="step" data-step="5">
-          <div class="step-number">5</div>
           <div class="step-label">Results</div>
         </div>
       </div>
@@ -103,63 +99,8 @@
         <input type="hidden" id="use_case" name="use_case" value="">
       </div>
 
-      <!-- Step 3: ROI Model -->
+      <!-- Step 3: Business Inputs -->
       <div class="form-step" id="step-3">
-        <h2>ROI Model</h2>
-        <p class="step-description">How should we calculate your savings?</p>
-
-        <div class="model-options">
-          <div class="model-card" data-value="time_savings">
-            <div class="model-header">
-              <input type="radio" name="roi_model" id="roi_time_savings" value="time_savings">
-              <label for="roi_time_savings">
-                <strong>Time Savings</strong>
-                <span>Value based on hours saved × hourly rate</span>
-              </label>
-            </div>
-            <p class="model-description">Reduce manual work hours</p>
-          </div>
-
-          <div class="model-card" data-value="fte_avoidance">
-            <div class="model-header">
-              <input type="radio" name="roi_model" id="roi_fte_avoidance" value="fte_avoidance">
-              <label for="roi_fte_avoidance">
-                <strong>FTE Avoidance</strong>
-                <span>Value based on headcount you won't need to hire</span>
-              </label>
-            </div>
-            <p class="model-description">Scale without adding headcount</p>
-          </div>
-        </div>
-
-        <div class="conditional-field" id="fte-cost-field" style="display: none;">
-          <label for="fte_cost">Fully Loaded FTE Cost (Annual)</label>
-          <div class="input-with-prefix">
-            <span class="prefix">$</span>
-            <input type="text" id="fte_cost" name="fte_cost" value="85,000" placeholder="85,000">
-          </div>
-          <p class="field-help">Include salary, benefits, and overhead</p>
-        </div>
-
-        <div class="backfill-options">
-          <label>Backfill Rate Type</label>
-          <p class="field-help">How would one-time historical document processing be handled?</p>
-
-          <div class="radio-group">
-            <label class="radio-option">
-              <input type="radio" name="backfill_rate_type" value="staff" checked>
-              <span>Staff Rate ($50/hr)</span>
-            </label>
-            <label class="radio-option">
-              <input type="radio" name="backfill_rate_type" value="consultant">
-              <span>Consultant Rate ($150/hr)</span>
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 4: Business Inputs -->
-      <div class="form-step" id="step-4">
         <h2>Your Volume</h2>
         <p class="step-description" id="inputs-description">Enter your numbers</p>
 
@@ -168,8 +109,8 @@
         </div>
       </div>
 
-      <!-- Step 5: Email & Results -->
-      <div class="form-step" id="step-5">
+      <!-- Step 4: Email & Results -->
+      <div class="form-step" id="step-4">
         <div id="email-capture" class="email-section">
           <h2>Get Your Results</h2>
           <p class="step-description">Enter your email to see your analysis</p>
@@ -241,14 +182,21 @@
                 <span class="breakdown-label">Annual Hours Saved</span>
                 <span class="breakdown-value" id="result-annual-hours">0</span>
               </div>
-              <div class="breakdown-item">
-                <span class="breakdown-label">Annual Recurring Savings</span>
-                <span class="breakdown-value" id="result-recurring-savings">$0</span>
+            </div>
+            <p class="breakdown-note" id="consultant-note" style="margin-top: 16px; font-size: 0.9rem; color: #666;">
+              Savings could be higher if using external consultants for historical data processing.
+            </p>
+          </div>
+
+          <div class="adjust-section">
+            <h3>Adjust Assumptions</h3>
+            <div class="adjust-row">
+              <label for="adjust-fte-cost">FTE Cost (annual, fully loaded)</label>
+              <div class="input-with-prefix compact">
+                <span class="prefix">$</span>
+                <input type="text" id="adjust-fte-cost" value="85,000">
               </div>
-              <div class="breakdown-item">
-                <span class="breakdown-label">One-Time Backfill Savings</span>
-                <span class="breakdown-value" id="result-backfill-savings">$0</span>
-              </div>
+              <button class="btn-recalc" id="recalc-btn">Recalculate</button>
             </div>
           </div>
 

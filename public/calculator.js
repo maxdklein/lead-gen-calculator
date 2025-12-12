@@ -2,19 +2,19 @@
 
 // State
 let currentStep = 1;
-const totalSteps = 5;
+const totalSteps = 4;
 let formData = {
   company_type: '',
   use_case: '',
-  roi_model: 'time_savings',
+  roi_model: 'time_savings', // Default, hidden from user
   fte_cost: 85000,
-  backfill_rate_type: 'staff',
+  backfill_rate_type: 'staff', // Default, hidden from user
   // Business inputs (varies by use case)
   monthly_documents: 0,
   annual_backfill: 0,
   m_and_a_transactions_per_year: 0,
   avg_households_per_transaction: 0,
-  historical_households_to_migrate: 0,
+  historical_households_to_migrate: 0, // Auto-calculated for M&A
   annual_new_clients: 0,
   annual_investors_onboarded: 0,
   // Contact info
@@ -43,6 +43,7 @@ const USE_CASES_BY_COMPANY = {
   ]
 };
 
+// Simplified business inputs - removed historical_households_to_migrate (auto-calculated)
 const BUSINESS_INPUTS_BY_USE_CASE = {
   critical_business_process: [
     { name: 'monthly_documents', label: 'Monthly Documents Processed', help: 'Average number of documents processed per month', placeholder: '500' },
@@ -50,8 +51,7 @@ const BUSINESS_INPUTS_BY_USE_CASE = {
   ],
   m_and_a_transitions: [
     { name: 'm_and_a_transactions_per_year', label: 'M&A Transactions per Year', help: 'Number of acquisitions or mergers annually', placeholder: '3' },
-    { name: 'avg_households_per_transaction', label: 'Avg Households per Transaction', help: 'Average number of client households per acquisition', placeholder: '200' },
-    { name: 'historical_households_to_migrate', label: 'Historical Households to Migrate', help: 'Total households from past acquisitions to process', placeholder: '1000' }
+    { name: 'avg_households_per_transaction', label: 'Avg Households per Transaction', help: 'Average number of client households per acquisition', placeholder: '200' }
   ],
   prospects_onboarding: [
     { name: 'annual_new_clients', label: 'Annual New Clients', help: 'Number of new clients onboarded per year', placeholder: '100' },
@@ -70,6 +70,7 @@ const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 const submitBtn = document.getElementById('submit-btn');
 const exportPdfBtn = document.getElementById('export-pdf-btn');
+const recalcBtn = document.getElementById('recalc-btn');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -90,43 +91,23 @@ function setupEventListeners() {
   submitBtn.addEventListener('click', submitForm);
   exportPdfBtn.addEventListener('click', exportPDF);
 
+  // Recalculate button
+  if (recalcBtn) {
+    recalcBtn.addEventListener('click', recalculateWithNewFteCost);
+  }
+
+  // FTE cost adjustment input
+  const adjustFteCost = document.getElementById('adjust-fte-cost');
+  if (adjustFteCost) {
+    adjustFteCost.addEventListener('input', (e) => {
+      const value = e.target.value.replace(/[^0-9]/g, '');
+      e.target.value = value ? formatNumber(parseInt(value)) : '';
+    });
+  }
+
   // Step 1: Company Type cards
   document.querySelectorAll('#step-1 .selection-card').forEach(card => {
     card.addEventListener('click', () => selectCompanyType(card.dataset.value));
-  });
-
-  // Step 3: ROI Model
-  document.querySelectorAll('input[name="roi_model"]').forEach(radio => {
-    radio.addEventListener('change', (e) => {
-      formData.roi_model = e.target.value;
-      updateModelCardSelection();
-      toggleFteCostField();
-      updateNavigation();
-    });
-  });
-
-  // Step 3: FTE Cost input
-  const fteCostInput = document.getElementById('fte_cost');
-  fteCostInput.addEventListener('input', (e) => {
-    const value = e.target.value.replace(/[^0-9]/g, '');
-    formData.fte_cost = parseInt(value) || 85000;
-    e.target.value = formatNumber(formData.fte_cost);
-  });
-
-  // Step 3: Backfill rate type
-  document.querySelectorAll('input[name="backfill_rate_type"]').forEach(radio => {
-    radio.addEventListener('change', (e) => {
-      formData.backfill_rate_type = e.target.value;
-    });
-  });
-
-  // Model card click handlers
-  document.querySelectorAll('.model-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const radio = card.querySelector('input[type="radio"]');
-      radio.checked = true;
-      radio.dispatchEvent(new Event('change'));
-    });
   });
 }
 
@@ -168,17 +149,8 @@ function selectUseCase(value) {
     card.classList.toggle('selected', card.dataset.value === value);
   });
 
-  // Populate business inputs for step 4
+  // Populate business inputs for step 3
   populateBusinessInputs();
-
-  // Set default backfill rate type based on use case
-  if (value === 'm_and_a_transitions') {
-    formData.backfill_rate_type = 'consultant';
-    document.querySelector('input[name="backfill_rate_type"][value="consultant"]').checked = true;
-  } else {
-    formData.backfill_rate_type = 'staff';
-    document.querySelector('input[name="backfill_rate_type"][value="staff"]').checked = true;
-  }
 
   updateNavigation();
 }
@@ -186,6 +158,18 @@ function selectUseCase(value) {
 function populateBusinessInputs() {
   const container = document.getElementById('business-inputs');
   const inputs = BUSINESS_INPUTS_BY_USE_CASE[formData.use_case] || [];
+
+  // Update the description based on use case
+  const description = document.getElementById('inputs-description');
+  if (formData.use_case === 'm_and_a_transitions') {
+    description.textContent = 'Tell us about your M&A activity';
+  } else if (formData.use_case === 'new_investor_onboarding') {
+    description.textContent = 'Tell us about your investor volume';
+  } else if (formData.use_case === 'prospects_onboarding') {
+    description.textContent = 'Tell us about your client volume';
+  } else {
+    description.textContent = 'Enter your document volumes';
+  }
 
   container.innerHTML = inputs.map(input => `
     <div class="input-group">
@@ -204,18 +188,6 @@ function populateBusinessInputs() {
       updateNavigation();
     });
   });
-}
-
-function updateModelCardSelection() {
-  document.querySelectorAll('.model-card').forEach(card => {
-    const radio = card.querySelector('input[type="radio"]');
-    card.classList.toggle('selected', radio.checked);
-  });
-}
-
-function toggleFteCostField() {
-  const fteCostField = document.getElementById('fte-cost-field');
-  fteCostField.style.display = formData.roi_model === 'fte_avoidance' ? 'block' : 'none';
 }
 
 function goToPrevStep() {
@@ -239,8 +211,6 @@ function validateCurrentStep() {
     case 2:
       return !!formData.use_case;
     case 3:
-      return !!formData.roi_model;
-    case 4:
       return hasBusinessInputs();
     default:
       return true;
@@ -275,15 +245,24 @@ function updateStepDisplay() {
 
 function updateNavigation() {
   // Show/hide prev button
-  prevBtn.style.display = currentStep > 1 && currentStep < 5 ? 'block' : 'none';
+  prevBtn.style.display = currentStep > 1 && currentStep < 4 ? 'block' : 'none';
 
   // Show/hide next button
-  nextBtn.style.display = currentStep < 5 ? 'block' : 'none';
+  nextBtn.style.display = currentStep < 4 ? 'block' : 'none';
   nextBtn.disabled = !validateCurrentStep();
 
   // Hide nav buttons on results step
   const navButtons = document.querySelector('.nav-buttons');
-  navButtons.style.display = currentStep === 5 ? 'none' : 'flex';
+  navButtons.style.display = currentStep === 4 ? 'none' : 'flex';
+}
+
+// Auto-calculate historical households for M&A
+function calculateHistoricalHouseholds() {
+  if (formData.use_case === 'm_and_a_transitions') {
+    // annual transactions × 3 years × avg households
+    formData.historical_households_to_migrate =
+      formData.m_and_a_transactions_per_year * 3 * formData.avg_households_per_transaction;
+  }
 }
 
 async function submitForm() {
@@ -299,6 +278,9 @@ async function submitForm() {
   formData.last_name = document.getElementById('last_name').value;
   formData.company_name = document.getElementById('company_name').value;
   formData.phone = document.getElementById('phone').value;
+
+  // Auto-calculate historical households for M&A
+  calculateHistoricalHouseholds();
 
   submitBtn.disabled = true;
   submitBtn.textContent = 'Calculating...';
@@ -332,20 +314,66 @@ function displayResults() {
   document.getElementById('email-capture').style.display = 'none';
   document.getElementById('results-section').style.display = 'block';
 
-  // Populate results
+  // Populate results (no backfill dollar amounts shown)
   document.getElementById('result-annual-savings').textContent = formatCurrency(results.annual_savings);
   document.getElementById('result-ftes').textContent = results.ftes_avoided.toFixed(1);
   document.getElementById('result-monthly-hours').textContent = formatNumber(Math.round(results.monthly_hours_saved));
   document.getElementById('result-annual-hours').textContent = formatNumber(Math.round(results.monthly_hours_saved * 12));
-  document.getElementById('result-recurring-savings').textContent = formatCurrency(results.annual_recurring_savings);
-  document.getElementById('result-backfill-savings').textContent = formatCurrency(results.backfill_cost_saved);
+
+  // Show/hide consultant note for M&A
+  const consultantNote = document.getElementById('consultant-note');
+  if (consultantNote) {
+    consultantNote.style.display = formData.use_case === 'm_and_a_transitions' ? 'block' : 'none';
+  }
 
   // Populate strategic benefits
   const benefitsList = document.getElementById('strategic-benefits-list');
   benefitsList.innerHTML = results.strategic_benefits.map(benefit => `<li>${benefit}</li>`).join('');
 
+  // Set the FTE cost in the adjustment field
+  const adjustFteCost = document.getElementById('adjust-fte-cost');
+  if (adjustFteCost) {
+    adjustFteCost.value = formatNumber(formData.fte_cost);
+  }
+
   // Update step indicator to show completion
   steps.forEach(step => step.classList.add('completed'));
+}
+
+async function recalculateWithNewFteCost() {
+  const adjustFteCost = document.getElementById('adjust-fte-cost');
+  const newFteCost = parseInt(adjustFteCost.value.replace(/[^0-9]/g, '')) || 85000;
+
+  formData.fte_cost = newFteCost;
+  formData.roi_model = 'fte_avoidance'; // Switch to FTE model when they adjust
+
+  recalcBtn.disabled = true;
+  recalcBtn.textContent = 'Calculating...';
+
+  try {
+    const response = await fetch('/api/calculate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      results = data.results;
+      // Update display
+      document.getElementById('result-annual-savings').textContent = formatCurrency(results.annual_savings);
+      document.getElementById('result-ftes').textContent = results.ftes_avoided.toFixed(1);
+      document.getElementById('result-monthly-hours').textContent = formatNumber(Math.round(results.monthly_hours_saved));
+      document.getElementById('result-annual-hours').textContent = formatNumber(Math.round(results.monthly_hours_saved * 12));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Failed to recalculate. Please try again.');
+  } finally {
+    recalcBtn.disabled = false;
+    recalcBtn.textContent = 'Recalculate';
+  }
 }
 
 async function exportPDF() {
@@ -396,14 +424,6 @@ async function exportPDF() {
           <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
             <span style="color: #666;">Annual Hours Saved</span>
             <span style="font-weight: 600; color: #08016A;">${formatNumber(Math.round(results.monthly_hours_saved * 12))}</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
-            <span style="color: #666;">Annual Recurring Savings</span>
-            <span style="font-weight: 600; color: #08016A;">${formatCurrency(results.annual_recurring_savings)}</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
-            <span style="color: #666;">One-Time Backfill Savings</span>
-            <span style="font-weight: 600; color: #08016A;">${formatCurrency(results.backfill_cost_saved)}</span>
           </div>
         </div>
       </div>

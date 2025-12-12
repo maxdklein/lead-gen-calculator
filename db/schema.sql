@@ -84,14 +84,19 @@ CREATE TABLE IF NOT EXISTS admin_users (
 );
 
 -- Session store table (for connect-pg-simple)
-CREATE TABLE IF NOT EXISTS "session" (
-    "sid" varchar NOT NULL COLLATE "default",
-    "sess" json NOT NULL,
-    "expire" timestamp(6) NOT NULL
-)
-WITH (OIDS=FALSE);
-
-ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
+-- Note: connect-pg-simple creates this table automatically with createTableIfMissing: true
+-- We only create the index if it doesn't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE tablename = 'session') THEN
+        CREATE TABLE "session" (
+            "sid" varchar NOT NULL COLLATE "default" PRIMARY KEY,
+            "sess" json NOT NULL,
+            "expire" timestamp(6) NOT NULL
+        );
+    END IF;
+END
+$$;
 CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");
 
 -- Strategic Benefits - predefined benefits by use case
