@@ -3,84 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ROI Calculator | LEA</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Capacity Calculator | LEA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'lea-navy': '#08016A',
+            'lea-navy-light': '#1a1380',
+            'lea-teal': '#0088BB',
+            'lea-teal-dark': '#006991',
+          }
+        }
+      }
+    }
+  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    .step.active .step-number { background: #0088BB; color: white; }
+    .step.completed .step-number { background: #0088BB; color: white; }
+    .step.completed .step-number::after { content: '✓'; }
+    .step.completed .step-number span { display: none; }
+    .selection-card.selected { border-color: #0088BB; background: #e6f5f9; }
+    .form-step { display: none; }
+    .form-step.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
 </head>
-<body>
-  <div class="container">
+<body class="bg-gray-50 min-h-screen">
+  <div class="max-w-3xl mx-auto px-4 py-8">
     <!-- Header -->
-    <header class="header">
-      <div class="logo">
-        <svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <text x="0" y="32" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#08016A">LEA</text>
-        </svg>
-      </div>
-      <h1 class="header-title">ROI Calculator</h1>
-      <p class="header-subtitle">Estimate your savings from automated document processing</p>
+    <header class="text-center mb-8">
+      <div class="text-3xl font-bold text-lea-navy mb-2">LEA</div>
+      <h1 class="text-2xl font-semibold text-gray-800 mb-1">Capacity Calculator</h1>
+      <p class="text-gray-500">See how much capacity you can add without hiring</p>
     </header>
 
     <!-- Progress Steps -->
-    <div class="progress-container">
-      <div class="progress-steps">
-        <div class="step active" data-step="1">
-          <div class="step-number">1</div>
-          <div class="step-label">Company</div>
+    <div class="flex justify-center mb-8">
+      <div class="flex items-center gap-2">
+        <div class="step active flex items-center gap-2" data-step="1">
+          <div class="step-number w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold transition-all">
+            <span>1</span>
+          </div>
+          <span class="text-sm font-medium text-gray-600 hidden sm:inline">Company</span>
         </div>
-        <div class="step" data-step="2">
-          <div class="step-number">2</div>
-          <div class="step-label">Use Case</div>
+        <div class="w-8 h-px bg-gray-300"></div>
+        <div class="step flex items-center gap-2" data-step="2">
+          <div class="step-number w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold transition-all">
+            <span>2</span>
+          </div>
+          <span class="text-sm font-medium text-gray-600 hidden sm:inline">Use Case</span>
         </div>
-        <div class="step" data-step="3">
-          <div class="step-number">3</div>
-          <div class="step-label">Volume</div>
+        <div class="w-8 h-px bg-gray-300"></div>
+        <div class="step flex items-center gap-2" data-step="3">
+          <div class="step-number w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold transition-all">
+            <span>3</span>
+          </div>
+          <span class="text-sm font-medium text-gray-600 hidden sm:inline">Volume</span>
         </div>
-        <div class="step" data-step="4">
-          <div class="step-number">4</div>
-          <div class="step-label">Results</div>
+        <div class="w-8 h-px bg-gray-300"></div>
+        <div class="step flex items-center gap-2" data-step="4">
+          <div class="step-number w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold transition-all">
+            <span>4</span>
+          </div>
+          <span class="text-sm font-medium text-gray-600 hidden sm:inline">Results</span>
         </div>
       </div>
     </div>
 
     <!-- Form Container -->
-    <div class="form-container">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
       <!-- Step 1: Company Type -->
       <div class="form-step active" id="step-1">
-        <h2>Company Type</h2>
-        <p class="step-description">Select your organization type</p>
+        <h2 class="text-xl font-semibold text-gray-800 mb-1">Company Type</h2>
+        <p class="text-gray-500 mb-6">Select your organization type</p>
 
-        <div class="card-grid">
-          <div class="selection-card" data-value="wealth_management">
-            <div class="card-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-              </svg>
-            </div>
-            <h3>Wealth Management Firm</h3>
-            <p>RIAs, broker-dealers, family offices, and wealth advisors</p>
+        <div class="grid gap-4">
+          <div class="selection-card border-2 border-gray-200 rounded-xl p-5 cursor-pointer hover:border-lea-teal hover:bg-blue-50/30 transition-all" data-value="wealth_management">
+            <h3 class="font-semibold text-gray-800 mb-1">Wealth Management Firm</h3>
+            <p class="text-sm text-gray-500">RIAs, broker-dealers, family offices, and wealth advisors</p>
           </div>
 
-          <div class="selection-card" data-value="private_markets_platform">
-            <div class="card-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <path d="M3 9h18M9 21V9"/>
-              </svg>
-            </div>
-            <h3>Private Markets Platform</h3>
-            <p>Alternative investment platforms, fund administrators, and capital markets firms</p>
+          <div class="selection-card border-2 border-gray-200 rounded-xl p-5 cursor-pointer hover:border-lea-teal hover:bg-blue-50/30 transition-all" data-value="private_markets_platform">
+            <h3 class="font-semibold text-gray-800 mb-1">Private Markets Platform</h3>
+            <p class="text-sm text-gray-500">Alternative investment platforms, fund administrators, and capital markets firms</p>
           </div>
 
-          <div class="selection-card" data-value="point_solutions_b2b">
-            <div class="card-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 1v6m0 6v6M1 12h6m6 0h6"/>
-              </svg>
-            </div>
-            <h3>Point Solutions / B2B</h3>
-            <p>Software vendors, service providers, and technology companies</p>
+          <div class="selection-card border-2 border-gray-200 rounded-xl p-5 cursor-pointer hover:border-lea-teal hover:bg-blue-50/30 transition-all" data-value="point_solutions_b2b">
+            <h3 class="font-semibold text-gray-800 mb-1">Point Solutions / B2B</h3>
+            <p class="text-sm text-gray-500">Software vendors, service providers, and technology companies</p>
           </div>
         </div>
 
@@ -89,10 +103,10 @@
 
       <!-- Step 2: Use Case -->
       <div class="form-step" id="step-2">
-        <h2>Use Case</h2>
-        <p class="step-description">What problem are you solving?</p>
+        <h2 class="text-xl font-semibold text-gray-800 mb-1">Use Case</h2>
+        <p class="text-gray-500 mb-6">What problem are you solving?</p>
 
-        <div class="card-grid" id="use-case-cards">
+        <div class="grid gap-4" id="use-case-cards">
           <!-- Cards will be dynamically populated based on company type -->
         </div>
 
@@ -101,131 +115,122 @@
 
       <!-- Step 3: Business Inputs -->
       <div class="form-step" id="step-3">
-        <h2>Your Volume</h2>
-        <p class="step-description" id="inputs-description">Enter your numbers</p>
+        <h2 class="text-xl font-semibold text-gray-800 mb-1">Your Volume</h2>
+        <p class="text-gray-500 mb-6" id="inputs-description">Enter your numbers</p>
 
-        <div class="inputs-container" id="business-inputs">
+        <div class="space-y-5" id="business-inputs">
           <!-- Dynamically populated based on use case -->
         </div>
       </div>
 
       <!-- Step 4: Email & Results -->
       <div class="form-step" id="step-4">
-        <div id="email-capture" class="email-section">
-          <h2>Get Your Results</h2>
-          <p class="step-description">Enter your email to see your analysis</p>
+        <div id="email-capture">
+          <h2 class="text-xl font-semibold text-gray-800 mb-1 text-center">Get Your Results</h2>
+          <p class="text-gray-500 mb-6 text-center">Enter your email to see your analysis</p>
 
-          <div class="email-form">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="email">Work Email <span class="required">*</span></label>
-                <input type="email" id="email" name="email" required placeholder="you@company.com">
+          <div class="max-w-md mx-auto space-y-4">
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Work Email <span class="text-red-500">*</span></label>
+              <input type="email" id="email" name="email" required placeholder="you@company.com" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-lea-teal focus:outline-none transition-colors">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                <input type="text" id="first_name" name="first_name" placeholder="First name" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-lea-teal focus:outline-none transition-colors">
+              </div>
+              <div>
+                <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                <input type="text" id="last_name" name="last_name" placeholder="Last name" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-lea-teal focus:outline-none transition-colors">
               </div>
             </div>
 
-            <div class="form-row two-col">
-              <div class="form-group">
-                <label for="first_name">First Name</label>
-                <input type="text" id="first_name" name="first_name" placeholder="First name">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="company_name" class="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                <input type="text" id="company_name" name="company_name" placeholder="Company name" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-lea-teal focus:outline-none transition-colors">
               </div>
-              <div class="form-group">
-                <label for="last_name">Last Name</label>
-                <input type="text" id="last_name" name="last_name" placeholder="Last name">
-              </div>
-            </div>
-
-            <div class="form-row two-col">
-              <div class="form-group">
-                <label for="company_name">Company</label>
-                <input type="text" id="company_name" name="company_name" placeholder="Company name">
-              </div>
-              <div class="form-group">
-                <label for="phone">Phone</label>
-                <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567">
+              <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-lea-teal focus:outline-none transition-colors">
               </div>
             </div>
 
-            <button type="button" class="btn-primary btn-large" id="submit-btn">
+            <button type="button" class="w-full bg-lea-teal hover:bg-lea-teal-dark text-white font-semibold py-3 px-6 rounded-lg transition-colors" id="submit-btn">
               View My Results
             </button>
 
-            <p class="privacy-note">We won't share your information.</p>
+            <p class="text-center text-sm text-gray-400">We won't share your information.</p>
           </div>
         </div>
 
-        <div id="results-section" class="results-section" style="display: none;">
-          <div class="results-header">
-            <h2>Your ROI Analysis</h2>
-            <button class="btn-secondary" id="export-pdf-btn">Export PDF</button>
+        <div id="results-section" class="hidden">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-gray-800">Your Results</h2>
+            <button class="text-sm text-lea-teal hover:text-lea-teal-dark font-medium" id="export-pdf-btn">Export PDF</button>
           </div>
 
-          <div class="results-grid">
-            <div class="result-card primary">
-              <div class="result-label">Annual Cost Savings</div>
-              <div class="result-value" id="result-annual-savings">$0</div>
-            </div>
+          <!-- Hero Metric -->
+          <div class="bg-gradient-to-br from-lea-teal to-lea-teal-dark rounded-2xl p-8 text-center text-white mb-6">
+            <div class="text-6xl font-bold mb-2" id="result-ftes">0</div>
+            <div class="text-lg opacity-90 mb-1">FTEs worth of capacity</div>
+            <div class="text-sm opacity-75">gained without adding headcount</div>
+          </div>
 
-            <div class="result-card primary">
-              <div class="result-label">FTEs Worth of Capacity</div>
-              <div class="result-value" id="result-ftes">0</div>
+          <!-- How We Calculated -->
+          <div class="bg-gray-50 rounded-xl p-5 mb-6">
+            <h3 class="font-semibold text-gray-700 mb-4">How We Calculated This</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                <span class="text-gray-500 text-sm">Monthly Hours Saved</span>
+                <span class="font-semibold text-gray-800" id="result-monthly-hours">0</span>
+              </div>
+              <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                <span class="text-gray-500 text-sm">Annual Hours Saved</span>
+                <span class="font-semibold text-gray-800" id="result-annual-hours">0</span>
+              </div>
             </div>
           </div>
 
-          <div class="results-breakdown">
-            <h3>Savings Breakdown</h3>
-            <div class="breakdown-grid">
-              <div class="breakdown-item">
-                <span class="breakdown-label">Monthly Hours Saved</span>
-                <span class="breakdown-value" id="result-monthly-hours">0</span>
-              </div>
-              <div class="breakdown-item">
-                <span class="breakdown-label">Annual Hours Saved</span>
-                <span class="breakdown-value" id="result-annual-hours">0</span>
-              </div>
-            </div>
-            <p class="breakdown-note" id="consultant-note" style="margin-top: 16px; font-size: 0.9rem; color: #666;">
-              Savings could be higher if using external consultants for historical data processing.
+          <!-- Backfill Section (conditional) -->
+          <div class="bg-amber-50 border border-amber-100 rounded-xl p-5 mb-6 hidden" id="backfill-section">
+            <h3 class="font-semibold text-gray-700 mb-2">One-Time Backfill Savings</h3>
+            <div class="text-2xl font-bold text-amber-600 mb-2" id="result-backfill-savings">$0</div>
+            <p class="text-sm text-gray-600">Additional savings from processing historical data</p>
+            <p class="text-sm text-gray-500 mt-2" id="consultant-note">
+              Savings could be higher if using external consultants or resources.
             </p>
           </div>
 
-          <div class="adjust-section">
-            <h3>Adjust Assumptions</h3>
-            <div class="adjust-row">
-              <label for="adjust-fte-cost">FTE Cost (annual, fully loaded)</label>
-              <div class="input-with-prefix compact">
-                <span class="prefix">$</span>
-                <input type="text" id="adjust-fte-cost" value="85,000">
-              </div>
-              <button class="btn-recalc" id="recalc-btn">Recalculate</button>
-            </div>
-          </div>
-
-          <div class="strategic-benefits" id="strategic-benefits-section">
-            <h3>Strategic Value</h3>
-            <ul id="strategic-benefits-list">
+          <!-- Strategic Benefits -->
+          <div class="bg-gradient-to-br from-blue-50 to-green-50 border border-blue-100 rounded-xl p-5 mb-6" id="strategic-benefits-section">
+            <h3 class="font-semibold text-gray-700 mb-4">Strategic Value</h3>
+            <ul class="space-y-3" id="strategic-benefits-list">
               <!-- Populated dynamically -->
             </ul>
           </div>
 
-          <div class="cta-section">
-            <h3>Want to see it in action?</h3>
-            <p>Schedule a demo to discuss your specific use case.</p>
-            <a href="https://getlea.io/contact" class="btn-primary" target="_blank">Schedule a Demo</a>
+          <!-- CTA -->
+          <div class="bg-lea-navy rounded-xl p-6 text-center text-white">
+            <h3 class="font-semibold mb-1">Want to see it in action?</h3>
+            <p class="text-sm opacity-80 mb-4">Schedule a demo to discuss your specific use case.</p>
+            <a href="https://getlea.io/contact" class="inline-block bg-lea-teal hover:bg-lea-teal-dark text-white font-semibold py-2 px-6 rounded-lg transition-colors" target="_blank">Schedule a Demo</a>
           </div>
         </div>
       </div>
 
       <!-- Navigation Buttons -->
-      <div class="nav-buttons">
-        <button class="btn-secondary" id="prev-btn" style="display: none;">Back</button>
-        <button class="btn-primary" id="next-btn" disabled>Continue</button>
+      <div class="flex justify-between mt-8 nav-buttons">
+        <button class="px-6 py-2 border-2 border-gray-200 rounded-lg font-medium text-gray-600 hover:border-gray-300 transition-colors hidden" id="prev-btn">Back</button>
+        <button class="px-6 py-2 bg-lea-teal hover:bg-lea-teal-dark text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ml-auto" id="next-btn" disabled>Continue</button>
       </div>
     </div>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="text-center mt-8 text-sm text-gray-400">
       <p>&copy; 2025 LEA. All rights reserved.</p>
-      <a href="https://getlea.io" target="_blank">www.getlea.io</a>
+      <a href="https://getlea.io" target="_blank" class="hover:text-lea-teal">www.getlea.io</a>
     </footer>
   </div>
 

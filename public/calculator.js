@@ -1,4 +1,4 @@
-// ROI Calculator Frontend Logic
+// Capacity Calculator Frontend Logic
 
 // State
 let currentStep = 1;
@@ -6,15 +6,15 @@ const totalSteps = 4;
 let formData = {
   company_type: '',
   use_case: '',
-  roi_model: 'time_savings', // Default, hidden from user
+  roi_model: 'time_savings',
   fte_cost: 85000,
-  backfill_rate_type: 'staff', // Default, hidden from user
-  // Business inputs (varies by use case)
+  backfill_rate_type: 'staff',
+  // Business inputs
   monthly_documents: 0,
   annual_backfill: 0,
   m_and_a_transactions_per_year: 0,
   avg_households_per_transaction: 0,
-  historical_households_to_migrate: 0, // Auto-calculated for M&A
+  historical_households_to_migrate: 0,
   annual_new_clients: 0,
   annual_investors_onboarded: 0,
   // Contact info
@@ -43,7 +43,6 @@ const USE_CASES_BY_COMPANY = {
   ]
 };
 
-// Simplified business inputs - removed historical_households_to_migrate (auto-calculated)
 const BUSINESS_INPUTS_BY_USE_CASE = {
   critical_business_process: [
     { name: 'monthly_documents', label: 'Monthly Documents Processed', help: 'Average number of documents processed per month', placeholder: '500' },
@@ -70,7 +69,6 @@ const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 const submitBtn = document.getElementById('submit-btn');
 const exportPdfBtn = document.getElementById('export-pdf-btn');
-const recalcBtn = document.getElementById('recalc-btn');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -85,25 +83,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function setupEventListeners() {
-  // Navigation
   prevBtn.addEventListener('click', goToPrevStep);
   nextBtn.addEventListener('click', goToNextStep);
   submitBtn.addEventListener('click', submitForm);
   exportPdfBtn.addEventListener('click', exportPDF);
-
-  // Recalculate button
-  if (recalcBtn) {
-    recalcBtn.addEventListener('click', recalculateWithNewFteCost);
-  }
-
-  // FTE cost adjustment input
-  const adjustFteCost = document.getElementById('adjust-fte-cost');
-  if (adjustFteCost) {
-    adjustFteCost.addEventListener('input', (e) => {
-      const value = e.target.value.replace(/[^0-9]/g, '');
-      e.target.value = value ? formatNumber(parseInt(value)) : '';
-    });
-  }
 
   // Step 1: Company Type cards
   document.querySelectorAll('#step-1 .selection-card').forEach(card => {
@@ -114,12 +97,10 @@ function setupEventListeners() {
 function selectCompanyType(value) {
   formData.company_type = value;
 
-  // Update card selection visual
   document.querySelectorAll('#step-1 .selection-card').forEach(card => {
     card.classList.toggle('selected', card.dataset.value === value);
   });
 
-  // Populate use case cards for next step
   populateUseCaseCards();
   updateNavigation();
 }
@@ -129,13 +110,12 @@ function populateUseCaseCards() {
   const useCases = USE_CASES_BY_COMPANY[formData.company_type] || [];
 
   container.innerHTML = useCases.map(uc => `
-    <div class="selection-card" data-value="${uc.value}">
-      <h3>${uc.label}</h3>
-      <p>${uc.description}</p>
+    <div class="selection-card border-2 border-gray-200 rounded-xl p-5 cursor-pointer hover:border-lea-teal hover:bg-blue-50/30 transition-all" data-value="${uc.value}">
+      <h3 class="font-semibold text-gray-800 mb-1">${uc.label}</h3>
+      <p class="text-sm text-gray-500">${uc.description}</p>
     </div>
   `).join('');
 
-  // Add click handlers
   container.querySelectorAll('.selection-card').forEach(card => {
     card.addEventListener('click', () => selectUseCase(card.dataset.value));
   });
@@ -144,14 +124,11 @@ function populateUseCaseCards() {
 function selectUseCase(value) {
   formData.use_case = value;
 
-  // Update card selection visual
   document.querySelectorAll('#step-2 .selection-card').forEach(card => {
     card.classList.toggle('selected', card.dataset.value === value);
   });
 
-  // Populate business inputs for step 3
   populateBusinessInputs();
-
   updateNavigation();
 }
 
@@ -159,7 +136,6 @@ function populateBusinessInputs() {
   const container = document.getElementById('business-inputs');
   const inputs = BUSINESS_INPUTS_BY_USE_CASE[formData.use_case] || [];
 
-  // Update the description based on use case
   const description = document.getElementById('inputs-description');
   if (formData.use_case === 'm_and_a_transitions') {
     description.textContent = 'Tell us about your M&A activity';
@@ -172,14 +148,14 @@ function populateBusinessInputs() {
   }
 
   container.innerHTML = inputs.map(input => `
-    <div class="input-group">
-      <label for="${input.name}">${input.label}</label>
-      <input type="text" id="${input.name}" name="${input.name}" placeholder="${input.placeholder}" inputmode="numeric">
-      <p class="help-text">${input.help}</p>
+    <div>
+      <label for="${input.name}" class="block text-sm font-medium text-gray-700 mb-1">${input.label}</label>
+      <input type="text" id="${input.name}" name="${input.name}" placeholder="${input.placeholder}" inputmode="numeric"
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-lea-teal focus:outline-none transition-colors">
+      <p class="text-sm text-gray-400 mt-1">${input.help}</p>
     </div>
   `).join('');
 
-  // Add input handlers
   container.querySelectorAll('input').forEach(input => {
     input.addEventListener('input', (e) => {
       const value = e.target.value.replace(/[^0-9]/g, '');
@@ -219,12 +195,10 @@ function validateCurrentStep() {
 
 function hasBusinessInputs() {
   const inputs = BUSINESS_INPUTS_BY_USE_CASE[formData.use_case] || [];
-  // At least one required input should have a value
   return inputs.some(input => formData[input.name] > 0);
 }
 
 function updateStepDisplay() {
-  // Update step indicators
   steps.forEach((step, index) => {
     const stepNum = index + 1;
     step.classList.remove('active', 'completed');
@@ -235,7 +209,6 @@ function updateStepDisplay() {
     }
   });
 
-  // Update form steps
   formSteps.forEach((formStep, index) => {
     formStep.classList.toggle('active', index + 1 === currentStep);
   });
@@ -245,10 +218,18 @@ function updateStepDisplay() {
 
 function updateNavigation() {
   // Show/hide prev button
-  prevBtn.style.display = currentStep > 1 && currentStep < 4 ? 'block' : 'none';
+  if (currentStep > 1 && currentStep < 4) {
+    prevBtn.classList.remove('hidden');
+  } else {
+    prevBtn.classList.add('hidden');
+  }
 
   // Show/hide next button
-  nextBtn.style.display = currentStep < 4 ? 'block' : 'none';
+  if (currentStep < 4) {
+    nextBtn.classList.remove('hidden');
+  } else {
+    nextBtn.classList.add('hidden');
+  }
   nextBtn.disabled = !validateCurrentStep();
 
   // Hide nav buttons on results step
@@ -259,7 +240,6 @@ function updateNavigation() {
 // Auto-calculate historical households for M&A
 function calculateHistoricalHouseholds() {
   if (formData.use_case === 'm_and_a_transitions') {
-    // annual transactions × 3 years × avg households
     formData.historical_households_to_migrate =
       formData.m_and_a_transactions_per_year * 3 * formData.avg_households_per_transaction;
   }
@@ -272,14 +252,12 @@ async function submitForm() {
     return;
   }
 
-  // Collect contact info
   formData.email = email;
   formData.first_name = document.getElementById('first_name').value;
   formData.last_name = document.getElementById('last_name').value;
   formData.company_name = document.getElementById('company_name').value;
   formData.phone = document.getElementById('phone').value;
 
-  // Auto-calculate historical households for M&A
   calculateHistoricalHouseholds();
 
   submitBtn.disabled = true;
@@ -298,7 +276,7 @@ async function submitForm() {
       results = data.results;
       displayResults();
     } else {
-      alert(data.error || 'Failed to calculate ROI');
+      alert(data.error || 'Failed to calculate');
     }
   } catch (error) {
     console.error('Error:', error);
@@ -310,70 +288,36 @@ async function submitForm() {
 }
 
 function displayResults() {
-  // Hide email capture, show results
-  document.getElementById('email-capture').style.display = 'none';
-  document.getElementById('results-section').style.display = 'block';
+  document.getElementById('email-capture').classList.add('hidden');
+  document.getElementById('results-section').classList.remove('hidden');
 
-  // Populate results (no backfill dollar amounts shown)
-  document.getElementById('result-annual-savings').textContent = formatCurrency(results.annual_savings);
+  // Primary metric: FTEs
   document.getElementById('result-ftes').textContent = results.ftes_avoided.toFixed(1);
+
+  // Hours breakdown
   document.getElementById('result-monthly-hours').textContent = formatNumber(Math.round(results.monthly_hours_saved));
   document.getElementById('result-annual-hours').textContent = formatNumber(Math.round(results.monthly_hours_saved * 12));
 
-  // Show/hide consultant note for M&A
-  const consultantNote = document.getElementById('consultant-note');
-  if (consultantNote) {
-    consultantNote.style.display = formData.use_case === 'm_and_a_transitions' ? 'block' : 'none';
+  // Backfill section - only show if there's backfill savings
+  const backfillSection = document.getElementById('backfill-section');
+  if (results.backfill_cost_saved > 0) {
+    backfillSection.classList.remove('hidden');
+    document.getElementById('result-backfill-savings').textContent = formatCurrency(results.backfill_cost_saved);
+  } else {
+    backfillSection.classList.add('hidden');
   }
 
-  // Populate strategic benefits
+  // Strategic benefits
   const benefitsList = document.getElementById('strategic-benefits-list');
-  benefitsList.innerHTML = results.strategic_benefits.map(benefit => `<li>${benefit}</li>`).join('');
+  benefitsList.innerHTML = results.strategic_benefits.map(benefit =>
+    `<li class="flex items-start gap-2">
+      <span class="text-lea-teal mt-1">•</span>
+      <span class="text-gray-700">${benefit}</span>
+    </li>`
+  ).join('');
 
-  // Set the FTE cost in the adjustment field
-  const adjustFteCost = document.getElementById('adjust-fte-cost');
-  if (adjustFteCost) {
-    adjustFteCost.value = formatNumber(formData.fte_cost);
-  }
-
-  // Update step indicator to show completion
+  // Mark all steps complete
   steps.forEach(step => step.classList.add('completed'));
-}
-
-async function recalculateWithNewFteCost() {
-  const adjustFteCost = document.getElementById('adjust-fte-cost');
-  const newFteCost = parseInt(adjustFteCost.value.replace(/[^0-9]/g, '')) || 85000;
-
-  formData.fte_cost = newFteCost;
-  formData.roi_model = 'fte_avoidance'; // Switch to FTE model when they adjust
-
-  recalcBtn.disabled = true;
-  recalcBtn.textContent = 'Calculating...';
-
-  try {
-    const response = await fetch('/api/calculate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      results = data.results;
-      // Update display
-      document.getElementById('result-annual-savings').textContent = formatCurrency(results.annual_savings);
-      document.getElementById('result-ftes').textContent = results.ftes_avoided.toFixed(1);
-      document.getElementById('result-monthly-hours').textContent = formatNumber(Math.round(results.monthly_hours_saved));
-      document.getElementById('result-annual-hours').textContent = formatNumber(Math.round(results.monthly_hours_saved * 12));
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Failed to recalculate. Please try again.');
-  } finally {
-    recalcBtn.disabled = false;
-    recalcBtn.textContent = 'Recalculate';
-  }
 }
 
 async function exportPDF() {
@@ -383,7 +327,6 @@ async function exportPDF() {
   try {
     const { jsPDF } = window.jspdf;
 
-    // Create PDF content container
     const pdfContent = document.createElement('div');
     pdfContent.style.cssText = `
       width: 612px;
@@ -398,42 +341,43 @@ async function exportPDF() {
     pdfContent.innerHTML = `
       <div style="text-align: center; border-bottom: 2px solid #08016A; padding-bottom: 20px; margin-bottom: 30px;">
         <div style="font-size: 24px; font-weight: bold; color: #08016A; margin-bottom: 8px;">LEA</div>
-        <div style="font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px;">ROI Analysis</div>
+        <div style="font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px;">Capacity Analysis</div>
         <div style="font-size: 18px; font-weight: 600; color: #1a1a1a; margin-top: 12px;">${companyName}</div>
         <div style="font-size: 12px; color: #666; margin-top: 4px;">${useCaseLabel}</div>
       </div>
 
-      <div style="display: flex; gap: 20px; margin-bottom: 30px;">
-        <div style="flex: 1; background: linear-gradient(135deg, #0088BB, #006991); border-radius: 10px; padding: 24px; text-align: center; color: white;">
-          <div style="font-size: 10px; text-transform: uppercase; opacity: 0.9; margin-bottom: 8px;">Annual Cost Savings</div>
-          <div style="font-size: 28px; font-weight: 700;">${formatCurrency(results.annual_savings)}</div>
+      <div style="background: linear-gradient(135deg, #0088BB, #006991); border-radius: 12px; padding: 32px; text-align: center; color: white; margin-bottom: 24px;">
+        <div style="font-size: 48px; font-weight: 700; margin-bottom: 8px;">${results.ftes_avoided.toFixed(1)}</div>
+        <div style="font-size: 16px; opacity: 0.9;">FTEs worth of capacity</div>
+        <div style="font-size: 12px; opacity: 0.75; margin-top: 4px;">gained without adding headcount</div>
+      </div>
+
+      <div style="background: #f7fafc; border-radius: 10px; padding: 20px; margin-bottom: 24px;">
+        <div style="font-size: 14px; font-weight: 600; color: #08016A; margin-bottom: 12px;">How We Calculated This</div>
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+          <span style="color: #666;">Monthly Hours Saved</span>
+          <span style="font-weight: 600; color: #08016A;">${formatNumber(Math.round(results.monthly_hours_saved))}</span>
         </div>
-        <div style="flex: 1; background: linear-gradient(135deg, #0088BB, #006991); border-radius: 10px; padding: 24px; text-align: center; color: white;">
-          <div style="font-size: 10px; text-transform: uppercase; opacity: 0.9; margin-bottom: 8px;">FTEs Worth of Capacity</div>
-          <div style="font-size: 28px; font-weight: 700;">${results.ftes_avoided.toFixed(1)}</div>
+        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+          <span style="color: #666;">Annual Hours Saved</span>
+          <span style="font-weight: 600; color: #08016A;">${formatNumber(Math.round(results.monthly_hours_saved * 12))}</span>
         </div>
       </div>
 
-      <div style="background: #f7fafc; border-radius: 10px; padding: 24px; margin-bottom: 30px;">
-        <div style="font-size: 14px; font-weight: 600; color: #08016A; margin-bottom: 16px;">Savings Breakdown</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
-            <span style="color: #666;">Monthly Hours Saved</span>
-            <span style="font-weight: 600; color: #08016A;">${formatNumber(Math.round(results.monthly_hours_saved))}</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
-            <span style="color: #666;">Annual Hours Saved</span>
-            <span style="font-weight: 600; color: #08016A;">${formatNumber(Math.round(results.monthly_hours_saved * 12))}</span>
-          </div>
-        </div>
+      ${results.backfill_cost_saved > 0 ? `
+      <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 20px; margin-bottom: 24px;">
+        <div style="font-size: 14px; font-weight: 600; color: #92400e; margin-bottom: 8px;">One-Time Backfill Savings</div>
+        <div style="font-size: 24px; font-weight: 700; color: #d97706;">${formatCurrency(results.backfill_cost_saved)}</div>
+        <div style="font-size: 12px; color: #666; margin-top: 8px;">Savings could be higher if using external consultants or resources.</div>
       </div>
+      ` : ''}
 
-      <div style="background: linear-gradient(135deg, #e6f5f9, #f0fdf4); border: 1px solid rgba(0, 136, 187, 0.2); border-radius: 10px; padding: 24px; margin-bottom: 30px;">
-        <div style="font-size: 14px; font-weight: 600; color: #08016A; margin-bottom: 16px;">Strategic Value</div>
+      <div style="background: linear-gradient(135deg, #eff6ff, #f0fdf4); border: 1px solid #bfdbfe; border-radius: 10px; padding: 20px; margin-bottom: 24px;">
+        <div style="font-size: 14px; font-weight: 600; color: #08016A; margin-bottom: 12px;">Strategic Value</div>
         <ul style="list-style: none; padding: 0; margin: 0;">
           ${results.strategic_benefits.map(b => `
-            <li style="padding: 8px 0; padding-left: 20px; position: relative; color: #1a1a1a;">
-              <span style="position: absolute; left: 0; color: #0088BB; font-size: 18px;">•</span>
+            <li style="padding: 6px 0; padding-left: 16px; position: relative; color: #374151;">
+              <span style="position: absolute; left: 0; color: #0088BB;">•</span>
               ${b}
             </li>
           `).join('')}
@@ -441,16 +385,14 @@ async function exportPDF() {
       </div>
 
       <div style="text-align: center; padding: 20px; background: #08016A; border-radius: 10px; color: white;">
-        <div style="font-size: 14px; margin-bottom: 8px;">Want to see it in action?</div>
-        <div style="font-size: 12px; opacity: 0.9;">Schedule a demo to discuss your use case</div>
-        <div style="font-size: 12px; margin-top: 8px; opacity: 0.8;">www.getlea.io</div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">Want to see it in action?</div>
+        <div style="font-size: 12px; opacity: 0.8;">Schedule a demo to discuss your use case</div>
+        <div style="font-size: 12px; margin-top: 8px; opacity: 0.7;">www.getlea.io</div>
       </div>
     `;
 
-    // Append to document temporarily
     document.body.appendChild(pdfContent);
 
-    // Generate canvas
     const canvas = await html2canvas(pdfContent, {
       scale: 2,
       backgroundColor: '#ffffff',
@@ -458,10 +400,8 @@ async function exportPDF() {
       height: 792
     });
 
-    // Remove temp element
     document.body.removeChild(pdfContent);
 
-    // Create PDF
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'pt',
@@ -471,9 +411,8 @@ async function exportPDF() {
     const imgData = canvas.toDataURL('image/png');
     pdf.addImage(imgData, 'PNG', 0, 0, 612, 792);
 
-    // Download
     const safeCompanyName = companyName.replace(/[^a-zA-Z0-9]/g, '-');
-    pdf.save(`${safeCompanyName}-ROI-Analysis.pdf`);
+    pdf.save(`${safeCompanyName}-Capacity-Analysis.pdf`);
 
   } catch (error) {
     console.error('PDF export error:', error);
@@ -484,7 +423,6 @@ async function exportPDF() {
   }
 }
 
-// Utility functions
 function formatCurrency(value) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
