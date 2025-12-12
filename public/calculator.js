@@ -421,8 +421,8 @@ async function exportPDF() {
       </div>
 
       <div style="text-align: center; padding: 20px; background: #08016A; border-radius: 10px; color: white;">
-        <div style="font-size: 14px; margin-bottom: 8px;">Ready to learn more?</div>
-        <div style="font-size: 12px; opacity: 0.9;">Contact LEA to discuss your specific needs</div>
+        <div style="font-size: 14px; margin-bottom: 8px;">Want to see it in action?</div>
+        <div style="font-size: 12px; opacity: 0.9;">Schedule a demo to discuss your use case</div>
         <div style="font-size: 12px; margin-top: 8px; opacity: 0.8;">www.getlea.io</div>
       </div>
     `;
