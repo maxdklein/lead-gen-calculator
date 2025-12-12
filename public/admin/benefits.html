@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strategic Benefits | LEA Admin</title>
+  <link rel="stylesheet" href="admin.css">
+  <style>
+    /* Benefits-specific styles */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0;
+    }
+
+    .nav-tab {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+    }
+
+    .nav-tab:hover {
+      color: var(--lea-navy);
+    }
+
+    .nav-tab.active {
+      color: var(--lea-teal);
+      border-bottom-color: var(--lea-teal);
+    }
+
+    .benefits-list {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .benefit-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.2s;
+    }
+
+    .benefit-item:last-child {
+      border-bottom: none;
+    }
+
+    .benefit-item:hover {
+      background: var(--bg-gray);
+    }
+
+    .benefit-item.inactive {
+      opacity: 0.5;
+    }
+
+    .drag-handle {
+      cursor: grab;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .benefit-text {
+      flex: 1;
+      font-size: 0.95rem;
+    }
+
+    .benefit-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      background: none;
+      border: none;
+      padding: 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .btn-icon:hover {
+      background: var(--bg-gray-dark);
+      color: var(--text-primary);
+    }
+
+    .btn-icon.delete:hover {
+      color: var(--error-red);
+    }
+
+    .add-benefit-form {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .add-benefit-form .form-group {
+      flex: 1;
+      margin: 0;
+    }
+
+    .add-benefit-form label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .add-benefit-form input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .add-benefit-form input:focus {
+      outline: none;
+      border-color: var(--lea-teal);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    /* Edit modal */
+    .edit-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+
+    .edit-input:focus {
+      outline: none;
+      border-color: var(--lea-teal);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toggle-label {
+      font-weight: 500;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 48px;
+      height: 26px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--border-color);
+      border-radius: 26px;
+      transition: 0.3s;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background: var(--lea-teal);
+    }
+
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(22px);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+
+    .back-link:hover {
+      color: var(--lea-navy);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <h1>LEA</h1>
+      <span class="header-subtitle">Strategic Benefits</span>
+    </div>
+    <button class="btn-logout" id="logout-btn">Log Out</button>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <a href="/admin" class="back-link">&larr; Back to Leads</a>
+
+    <!-- Use Case Tabs -->
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-use-case="critical_business_process">Critical Business Process</button>
+      <button class="nav-tab" data-use-case="m_and_a_transitions">M&A Transitions</button>
+      <button class="nav-tab" data-use-case="prospects_onboarding">Prospects & Onboarding</button>
+      <button class="nav-tab" data-use-case="new_investor_onboarding">New Investor Onboarding</button>
+    </div>
+
+    <!-- Add New Benefit -->
+    <div class="add-benefit-form">
+      <div class="form-group">
+        <label for="new-benefit">Add New Benefit</label>
+        <input type="text" id="new-benefit" placeholder="Enter benefit text...">
+      </div>
+      <button class="btn-primary" id="add-btn">Add</button>
+    </div>
+
+    <!-- Benefits List -->
+    <div class="benefits-list" id="benefits-list">
+      <div class="empty-state">Loading benefits...</div>
+    </div>
+  </main>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Edit Benefit</h2>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="edit-input" id="edit-text" placeholder="Benefit text">
+        <div class="toggle-row">
+          <span class="toggle-label">Active</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="edit-active" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="modal-cancel">Cancel</button>
+        <button class="btn-primary" id="modal-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="benefits.js"></script>
+</body>
+</html>

@@ -375,6 +375,90 @@ app.get('/api/admin/leads/export', requireAdmin, async (req, res) => {
 });
 
 // =====================
+// STRATEGIC BENEFITS CMS
+// =====================
+
+// Get all strategic benefits (admin)
+app.get('/api/admin/benefits', requireAdmin, async (req, res) => {
+  try {
+    const benefits = await strategicBenefitsQueries.getAll();
+    res.json(benefits);
+  } catch (error) {
+    console.error('Error fetching benefits:', error);
+    res.status(500).json({ error: 'Failed to fetch benefits' });
+  }
+});
+
+// Create new benefit
+app.post('/api/admin/benefits', requireAdmin, async (req, res) => {
+  try {
+    const { use_case, benefit_text, display_order, is_active } = req.body;
+
+    if (!use_case || !benefit_text) {
+      return res.status(400).json({ error: 'Use case and benefit text are required' });
+    }
+
+    const benefit = await strategicBenefitsQueries.create({
+      use_case,
+      benefit_text,
+      display_order,
+      is_active
+    });
+    res.json(benefit);
+  } catch (error) {
+    console.error('Error creating benefit:', error);
+    res.status(500).json({ error: 'Failed to create benefit' });
+  }
+});
+
+// Update benefit
+app.put('/api/admin/benefits/:id', requireAdmin, async (req, res) => {
+  try {
+    const { benefit_text, display_order, is_active } = req.body;
+    const benefit = await strategicBenefitsQueries.update(req.params.id, {
+      benefit_text,
+      display_order,
+      is_active
+    });
+    if (!benefit) {
+      return res.status(404).json({ error: 'Benefit not found' });
+    }
+    res.json(benefit);
+  } catch (error) {
+    console.error('Error updating benefit:', error);
+    res.status(500).json({ error: 'Failed to update benefit' });
+  }
+});
+
+// Delete benefit
+app.delete('/api/admin/benefits/:id', requireAdmin, async (req, res) => {
+  try {
+    await strategicBenefitsQueries.delete(req.params.id);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting benefit:', error);
+    res.status(500).json({ error: 'Failed to delete benefit' });
+  }
+});
+
+// Reorder benefits for a use case
+app.post('/api/admin/benefits/reorder', requireAdmin, async (req, res) => {
+  try {
+    const { use_case, ordered_ids } = req.body;
+
+    if (!use_case || !ordered_ids || !Array.isArray(ordered_ids)) {
+      return res.status(400).json({ error: 'Use case and ordered IDs are required' });
+    }
+
+    await strategicBenefitsQueries.reorder(use_case, ordered_ids);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error reordering benefits:', error);
+    res.status(500).json({ error: 'Failed to reorder benefits' });
+  }
+});
+
+// =====================
 // SERVE FRONTEND
 // =====================
 
@@ -385,6 +469,10 @@ app.get('/admin', (req, res) => {
 
 app.get('/admin/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin', 'login.html'));
+});
+
+app.get('/admin/benefits', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin', 'benefits.html'));
 });
 
 // Serve main calculator

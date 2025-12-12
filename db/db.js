@@ -37,6 +37,53 @@ const strategicBenefitsQueries = {
       [useCase]
     );
     return result.rows.map(row => row.benefit_text);
+  },
+
+  getAll: async () => {
+    const result = await pool.query(
+      'SELECT * FROM strategic_benefits ORDER BY use_case, display_order'
+    );
+    return result.rows;
+  },
+
+  getById: async (id) => {
+    const result = await pool.query('SELECT * FROM strategic_benefits WHERE id = $1', [id]);
+    return result.rows[0];
+  },
+
+  create: async ({ use_case, benefit_text, display_order, is_active }) => {
+    const result = await pool.query(
+      `INSERT INTO strategic_benefits (use_case, benefit_text, display_order, is_active)
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [use_case, benefit_text, display_order || 0, is_active !== false]
+    );
+    return result.rows[0];
+  },
+
+  update: async (id, { benefit_text, display_order, is_active }) => {
+    const result = await pool.query(
+      `UPDATE strategic_benefits
+       SET benefit_text = COALESCE($1, benefit_text),
+           display_order = COALESCE($2, display_order),
+           is_active = COALESCE($3, is_active)
+       WHERE id = $4 RETURNING *`,
+      [benefit_text, display_order, is_active, id]
+    );
+    return result.rows[0];
+  },
+
+  delete: async (id) => {
+    await pool.query('DELETE FROM strategic_benefits WHERE id = $1', [id]);
+  },
+
+  reorder: async (use_case, orderedIds) => {
+    // Update display_order for each benefit in the array
+    for (let i = 0; i < orderedIds.length; i++) {
+      await pool.query(
+        'UPDATE strategic_benefits SET display_order = $1 WHERE id = $2 AND use_case = $3',
+        [i + 1, orderedIds[i], use_case]
+      );
+    }
   }
 };
 
