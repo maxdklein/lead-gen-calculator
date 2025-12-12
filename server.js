@@ -18,6 +18,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Trust proxy (required for secure cookies behind Railway's proxy)
+app.set('trust proxy', 1);
+
 // Session configuration
 app.use(session({
   store: new pgSession({
@@ -31,6 +34,7 @@ app.use(session({
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
+    sameSite: 'lax',
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
