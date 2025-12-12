@@ -310,8 +310,8 @@ function displayResults() {
   // Strategic benefits
   const benefitsList = document.getElementById('strategic-benefits-list');
   benefitsList.innerHTML = results.strategic_benefits.map(benefit =>
-    `<li class="flex items-start gap-2">
-      <span class="text-lea-teal mt-1">•</span>
+    `<li class="flex items-start gap-3 py-2 border-b border-gray-100 last:border-0">
+      <span class="text-lea-teal text-lg leading-none">✓</span>
       <span class="text-gray-700">${benefit}</span>
     </li>`
   ).join('');
@@ -340,54 +340,54 @@ async function exportPDF() {
 
     pdfContent.innerHTML = `
       <div style="text-align: center; border-bottom: 2px solid #08016A; padding-bottom: 20px; margin-bottom: 30px;">
-        <div style="font-size: 24px; font-weight: bold; color: #08016A; margin-bottom: 8px;">LEA</div>
+        <div style="font-size: 28px; font-weight: bold; color: #08016A; margin-bottom: 4px;">LEA</div>
         <div style="font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 1px;">Capacity Analysis</div>
-        <div style="font-size: 18px; font-weight: 600; color: #1a1a1a; margin-top: 12px;">${companyName}</div>
-        <div style="font-size: 12px; color: #666; margin-top: 4px;">${useCaseLabel}</div>
+        <div style="font-size: 16px; font-weight: 600; color: #1a1a1a; margin-top: 12px;">${companyName}</div>
+        <div style="font-size: 11px; color: #666; margin-top: 2px;">${useCaseLabel}</div>
       </div>
 
-      <div style="background: linear-gradient(135deg, #0088BB, #006991); border-radius: 12px; padding: 32px; text-align: center; color: white; margin-bottom: 24px;">
-        <div style="font-size: 48px; font-weight: 700; margin-bottom: 8px;">${results.ftes_avoided.toFixed(1)}</div>
-        <div style="font-size: 16px; opacity: 0.9;">FTEs worth of capacity</div>
-        <div style="font-size: 12px; opacity: 0.75; margin-top: 4px;">gained without adding headcount</div>
-      </div>
-
-      <div style="background: #f7fafc; border-radius: 10px; padding: 20px; margin-bottom: 24px;">
-        <div style="font-size: 14px; font-weight: 600; color: #08016A; margin-bottom: 12px;">How We Calculated This</div>
-        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
-          <span style="color: #666;">Monthly Hours Saved</span>
-          <span style="font-weight: 600; color: #08016A;">${formatNumber(Math.round(results.monthly_hours_saved))}</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-          <span style="color: #666;">Annual Hours Saved</span>
-          <span style="font-weight: 600; color: #08016A;">${formatNumber(Math.round(results.monthly_hours_saved * 12))}</span>
+      <div style="background: linear-gradient(135deg, #0088BB, #006991); border-radius: 12px; padding: 36px 32px; text-align: center; color: white; margin-bottom: 24px;">
+        <div style="font-size: 56px; font-weight: 700; margin-bottom: 8px;">${results.ftes_avoided.toFixed(1)}</div>
+        <div style="font-size: 18px; opacity: 0.95;">FTEs worth of capacity</div>
+        <div style="font-size: 12px; opacity: 0.75; margin-top: 4px; margin-bottom: 20px;">Add capacity without adding headcount</div>
+        <div style="display: flex; justify-content: center; gap: 40px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 16px;">
+          <div>
+            <div style="font-size: 22px; font-weight: 600;">${formatNumber(Math.round(results.monthly_hours_saved))}</div>
+            <div style="font-size: 10px; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.5px;">Hours/Month</div>
+          </div>
+          <div>
+            <div style="font-size: 22px; font-weight: 600;">${formatNumber(Math.round(results.monthly_hours_saved * 12))}</div>
+            <div style="font-size: 10px; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.5px;">Hours/Year</div>
+          </div>
         </div>
       </div>
 
       ${results.backfill_cost_saved > 0 ? `
-      <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 20px; margin-bottom: 24px;">
-        <div style="font-size: 14px; font-weight: 600; color: #92400e; margin-bottom: 8px;">One-Time Backfill Savings</div>
+      <div style="background: #fffbeb; border: 1px solid #fcd34d; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 14px; font-weight: 600; color: #1a1a1a;">One-Time Backfill Savings</div>
+          <div style="font-size: 11px; color: #666;">Processing historical data*</div>
+        </div>
         <div style="font-size: 24px; font-weight: 700; color: #d97706;">${formatCurrency(results.backfill_cost_saved)}</div>
-        <div style="font-size: 12px; color: #666; margin-top: 8px;">Savings could be higher if using external consultants or resources.</div>
       </div>
+      <div style="font-size: 10px; color: #999; margin-top: -18px; margin-bottom: 20px;">*Could be higher with external consultants</div>
       ` : ''}
 
-      <div style="background: linear-gradient(135deg, #eff6ff, #f0fdf4); border: 1px solid #bfdbfe; border-radius: 10px; padding: 20px; margin-bottom: 24px;">
-        <div style="font-size: 14px; font-weight: 600; color: #08016A; margin-bottom: 12px;">Strategic Value</div>
+      <div style="margin-bottom: 24px;">
+        <div style="font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">Beyond the numbers</div>
         <ul style="list-style: none; padding: 0; margin: 0;">
           ${results.strategic_benefits.map(b => `
-            <li style="padding: 6px 0; padding-left: 16px; position: relative; color: #374151;">
-              <span style="position: absolute; left: 0; color: #0088BB;">•</span>
-              ${b}
+            <li style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; display: flex; align-items: flex-start; gap: 10px;">
+              <span style="color: #0088BB; font-size: 14px;">✓</span>
+              <span style="color: #374151; font-size: 13px;">${b}</span>
             </li>
           `).join('')}
         </ul>
       </div>
 
-      <div style="text-align: center; padding: 20px; background: #08016A; border-radius: 10px; color: white;">
-        <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">Want to see it in action?</div>
-        <div style="font-size: 12px; opacity: 0.8;">Schedule a demo to discuss your use case</div>
-        <div style="font-size: 12px; margin-top: 8px; opacity: 0.7;">www.getlea.io</div>
+      <div style="text-align: center; padding: 24px; background: #08016A; border-radius: 10px; color: white;">
+        <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">See how it works for your team</div>
+        <div style="font-size: 12px; opacity: 0.8;">www.getlea.io/contact</div>
       </div>
     `;
 

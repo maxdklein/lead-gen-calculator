@@ -166,56 +166,54 @@
         </div>
 
         <div id="results-section" class="hidden">
-          <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-semibold text-gray-800">Your Results</h2>
-            <button class="text-sm text-lea-teal hover:text-lea-teal-dark font-medium" id="export-pdf-btn">Export PDF</button>
-          </div>
+          <!-- Hero Metric - Primary Focus -->
+          <div class="bg-gradient-to-br from-lea-teal to-lea-teal-dark rounded-2xl p-10 text-center text-white mb-8">
+            <div class="text-7xl font-bold mb-3" id="result-ftes">0</div>
+            <div class="text-xl opacity-95 mb-2">FTEs worth of capacity</div>
+            <div class="text-sm opacity-75 mb-6">Add capacity without adding headcount</div>
 
-          <!-- Hero Metric -->
-          <div class="bg-gradient-to-br from-lea-teal to-lea-teal-dark rounded-2xl p-8 text-center text-white mb-6">
-            <div class="text-6xl font-bold mb-2" id="result-ftes">0</div>
-            <div class="text-lg opacity-90 mb-1">FTEs worth of capacity</div>
-            <div class="text-sm opacity-75">gained without adding headcount</div>
-          </div>
-
-          <!-- How We Calculated -->
-          <div class="bg-gray-50 rounded-xl p-5 mb-6">
-            <h3 class="font-semibold text-gray-700 mb-4">How We Calculated This</h3>
-            <div class="grid grid-cols-2 gap-4">
-              <div class="flex justify-between items-center py-2 border-b border-gray-200">
-                <span class="text-gray-500 text-sm">Monthly Hours Saved</span>
-                <span class="font-semibold text-gray-800" id="result-monthly-hours">0</span>
+            <!-- Hours inline - secondary info -->
+            <div class="flex justify-center gap-8 pt-4 border-t border-white/20">
+              <div>
+                <div class="text-2xl font-semibold" id="result-monthly-hours">0</div>
+                <div class="text-xs opacity-75 uppercase tracking-wide">Hours/Month</div>
               </div>
-              <div class="flex justify-between items-center py-2 border-b border-gray-200">
-                <span class="text-gray-500 text-sm">Annual Hours Saved</span>
-                <span class="font-semibold text-gray-800" id="result-annual-hours">0</span>
+              <div>
+                <div class="text-2xl font-semibold" id="result-annual-hours">0</div>
+                <div class="text-xs opacity-75 uppercase tracking-wide">Hours/Year</div>
               </div>
             </div>
           </div>
 
-          <!-- Backfill Section (conditional) -->
-          <div class="bg-amber-50 border border-amber-100 rounded-xl p-5 mb-6 hidden" id="backfill-section">
-            <h3 class="font-semibold text-gray-700 mb-2">One-Time Backfill Savings</h3>
-            <div class="text-2xl font-bold text-amber-600 mb-2" id="result-backfill-savings">$0</div>
-            <p class="text-sm text-gray-600">Additional savings from processing historical data</p>
-            <p class="text-sm text-gray-500 mt-2" id="consultant-note">
-              Savings could be higher if using external consultants or resources.
-            </p>
+          <!-- Backfill Section (conditional) - kept simple -->
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 hidden" id="backfill-section">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-medium text-gray-800">One-Time Backfill Savings</div>
+                <div class="text-sm text-gray-500">Processing historical data*</div>
+              </div>
+              <div class="text-2xl font-bold text-amber-600" id="result-backfill-savings">$0</div>
+            </div>
+            <p class="text-xs text-gray-400 mt-2">*Could be higher with external consultants</p>
           </div>
 
-          <!-- Strategic Benefits -->
-          <div class="bg-gradient-to-br from-blue-50 to-green-50 border border-blue-100 rounded-xl p-5 mb-6" id="strategic-benefits-section">
-            <h3 class="font-semibold text-gray-700 mb-4">Strategic Value</h3>
-            <ul class="space-y-3" id="strategic-benefits-list">
+          <!-- Strategic Benefits - Clean list -->
+          <div class="mb-8">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Beyond the numbers</h3>
+            <ul class="space-y-2" id="strategic-benefits-list">
               <!-- Populated dynamically -->
             </ul>
           </div>
 
-          <!-- CTA -->
+          <!-- CTA - Clear action -->
           <div class="bg-lea-navy rounded-xl p-6 text-center text-white">
-            <h3 class="font-semibold mb-1">Want to see it in action?</h3>
-            <p class="text-sm opacity-80 mb-4">Schedule a demo to discuss your specific use case.</p>
-            <a href="https://getlea.io/contact" class="inline-block bg-lea-teal hover:bg-lea-teal-dark text-white font-semibold py-2 px-6 rounded-lg transition-colors" target="_blank">Schedule a Demo</a>
+            <h3 class="text-lg font-semibold mb-2">See how it works for your team</h3>
+            <a href="https://getlea.io/contact" class="inline-block bg-lea-teal hover:bg-lea-teal-dark text-white font-semibold py-3 px-8 rounded-lg transition-colors mt-2" target="_blank">Schedule a Demo</a>
+          </div>
+
+          <!-- Export link - subtle -->
+          <div class="text-center mt-4">
+            <button class="text-sm text-gray-400 hover:text-lea-teal transition-colors" id="export-pdf-btn">Download PDF</button>
           </div>
         </div>
       </div>
@@ -228,9 +226,8 @@
     </div>
 
     <!-- Footer -->
-    <footer class="text-center mt-8 text-sm text-gray-400">
-      <p>&copy; 2025 LEA. All rights reserved.</p>
-      <a href="https://getlea.io" target="_blank" class="hover:text-lea-teal">www.getlea.io</a>
+    <footer class="text-center mt-8 text-sm text-gray-400 border-2 border-dashed border-gray-300 py-8 bg-gray-100">
+      <p class="text-gray-500 font-medium">LEA FOOTER GOES HERE</p>
     </footer>
   </div>
 

@@ -108,7 +108,26 @@ CREATE TABLE IF NOT EXISTS strategic_benefits (
     is_active BOOLEAN DEFAULT true
 );
 
--- Seed strategic benefits
+-- Clean up duplicate strategic benefits (keep lowest ID for each use_case + benefit_text pair)
+DELETE FROM strategic_benefits
+WHERE id NOT IN (
+    SELECT MIN(id)
+    FROM strategic_benefits
+    GROUP BY use_case, benefit_text
+);
+
+-- Add unique constraint if it doesn't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'strategic_benefits_use_case_benefit_text_key'
+    ) THEN
+        ALTER TABLE strategic_benefits ADD CONSTRAINT strategic_benefits_use_case_benefit_text_key UNIQUE (use_case, benefit_text);
+    END IF;
+END
+$$;
+
+-- Seed strategic benefits (only if not already present)
 INSERT INTO strategic_benefits (use_case, benefit_text, display_order) VALUES
 -- Critical Business Process
 ('critical_business_process', 'Flag discrepancies between billing actuals and fee schedules', 1),
@@ -135,4 +154,4 @@ INSERT INTO strategic_benefits (use_case, benefit_text, display_order) VALUES
 ('new_investor_onboarding', 'Close the gap between "tech-forward" marketing and operational reality', 3),
 ('new_investor_onboarding', 'Unlock subscription doc recycling', 4),
 ('new_investor_onboarding', 'Competitive differentiation vs. other platforms', 5)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (use_case, benefit_text) DO NOTHING;

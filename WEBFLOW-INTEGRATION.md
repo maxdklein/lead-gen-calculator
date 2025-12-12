@@ -245,6 +245,58 @@ curl -X POST https://myroi.getlea.io/api/calculate \
 
 ---
 
+## Strategic Benefits (Webflow CMS)
+
+Strategic benefits should be managed in Webflow CMS rather than using the `strategic_benefits` array from the API response. This gives you full control over content and styling.
+
+### Recommended CMS Structure
+
+**Collection: "Strategic Benefits"**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | Plain Text | Benefit text |
+| `use_case` | Option | `critical_business_process`, `m_and_a_transitions`, `prospects_onboarding`, `new_investor_onboarding` |
+| `order` | Number | Display order (1, 2, 3...) |
+
+### Displaying Benefits
+
+1. Create a Collection List filtered by `use_case`
+2. Initially hide all benefit lists
+3. After API call, show the list matching the submitted `use_case`
+
+```javascript
+// After successful API call
+const useCase = formData.use_case; // e.g., 'critical_business_process'
+
+// Hide all benefit lists
+document.querySelectorAll('[data-benefits-list]').forEach(el => el.style.display = 'none');
+
+// Show the matching one
+const matchingList = document.querySelector(`[data-benefits-list="${useCase}"]`);
+if (matchingList) {
+  matchingList.style.display = 'block';
+}
+```
+
+### Alternative: Single List with Data Attributes
+
+If you prefer one list, add the use_case as a data attribute on each item:
+
+```html
+<!-- In Webflow CMS Collection List -->
+<li data-use-case="critical_business_process">Benefit text here</li>
+```
+
+```javascript
+// Filter to show only matching benefits
+document.querySelectorAll('[data-use-case]').forEach(el => {
+  el.style.display = el.dataset.useCase === useCase ? 'list-item' : 'none';
+});
+```
+
+---
+
 ## Questions?
 
 Contact the development team for API support.
